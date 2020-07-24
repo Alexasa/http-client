@@ -9,7 +9,7 @@ require('HttpClient.class.php');
 $endpoint = '{API URL}';
 //what to send
 $data = array( {SOME DATA} );
-//crerate object
+//create object
 $client = new HttpClient($endpoint,'POST');
 //send data
 $ret = $client->send($data);
