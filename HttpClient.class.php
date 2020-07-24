@@ -61,7 +61,7 @@ class HttpClient
                 $options['http']['header'] =
                     'Content-Type: application/json' . "\r\n"
                     . 'Content-Length: ' . strlen($post) . "\r\n"
-                    . 'Authorization: Bearer ' . $this->token;
+                    . 'Authorization: Bearer ' . $this->token . "\r\n";
                 $options['http']['content'] = $post;
             }
             $result = file_get_contents($this->endpoint, null, 
