@@ -67,9 +67,45 @@ class HttpClient
             $result = file_get_contents($this->endpoint, null, 
                 stream_context_create($options)
             );
+            if(!$result) {
+                $headers = $this->parse_response_header($http_response_header);
+                $result = $headers['STATUS'];
+            }
         } catch (Throwable $t) {
             $error = $t->getMessage();
         }
         return array($result,$error);
+    }
+    /**
+    * parse_response_header()
+    *   Parse $http_response_header produced by file_get_contents().
+    *
+    * @param array $header
+    *   Supposed $http_response_header or array alike.
+    * @param array
+    *   Assoc array of the parsed version.
+    */
+    private function parse_response_header($header)
+    {
+        if (empty($header)) return []; // return empty array
+        // parse status line
+        $status_line = array_shift($header);
+        if (!preg_match('/^(\w+)\/(\d+\.\d+) (\d+) (.+?)$/', $status_line, $matches))
+            throw new Exception("misformat status line: {$status_line}");
+        return [
+            'PROTOCOL' => $matches[1],
+            'PROTOCOL_VERSION' => $matches[2],
+            'STATUS_CODE' => $matches[3],
+            'STATUS' => $matches[4],
+        ] + array_reduce($header, function ($carry, $line) {
+            // parse content line
+            list($key, $value) = explode(':', $line, 2);
+            if (!isset($carry[$key])) {
+                $carry[$key] = trim($value);
+            } else {
+                $carry[$key] .= "\n" . trim($value);
+            }
+            return $carry;
+        }, []);
     }
 }
