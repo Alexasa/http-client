@@ -42,8 +42,10 @@ class HttpClient
         } else $ret = false;
         return $error ? $error : $ret;
     }
+
     /**
     * Send payload
+    *
     * @param $post Send data, json
     * @return array(result,error)
     */
@@ -68,7 +70,7 @@ class HttpClient
                 stream_context_create($options)
             );
             if(!$result) {
-                $headers = $this->parse_response_header($http_response_header);
+                $headers = $this->parseHeader($http_response_header);
                 $result = $headers['STATUS'];
             }
         } catch (Throwable $t) {
@@ -76,8 +78,9 @@ class HttpClient
         }
         return array($result,$error);
     }
+
     /**
-    * parse_response_header()
+    * Parse response header
     *   Parse $http_response_header produced by file_get_contents().
     *
     * @param array $header
@@ -85,7 +88,7 @@ class HttpClient
     * @param array
     *   Assoc array of the parsed version.
     */
-    private function parse_response_header($header)
+    private function parseHeader($header)
     {
         if (empty($header)) return []; // return empty array
         // parse status line
